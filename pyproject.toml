@@ -1,0 +1,16 @@
+[project]
+name = "cck-blog"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "execnb>=0.1.14",
+    "fastcore>=1.8.1",
+    "ipykernel>=6.29.5",
+    "mistletoe>=1.4.0",
+    "monsterui>=1.0.19",
+    "python-fasthtml>=0.12.15",
+    "pyyaml>=6.0.2",
+    "regex>=2024.11.6",
+]

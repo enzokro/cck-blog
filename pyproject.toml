@@ -9,6 +9,7 @@ dependencies = [
     "fastcore>=1.8.1",
     "ipykernel>=6.29.5",
     "mistletoe>=1.4.0",
+    "modal>=0.74.45",
     "monsterui>=1.0.19",
     "python-fasthtml>=0.12.15",
     "pyyaml>=6.0.2",

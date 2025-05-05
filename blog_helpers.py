@@ -4,8 +4,12 @@ Borrowed from: https://github.com/DrChrisLevy/DrChrisLevy.github.io/blob/main/bl
 This is where new posts are added.
 """
 import yaml
+from pathlib import Path
 from execnb.nbio import read_nb
 from fastcore.ansi import ansi2html
+from fastcore.foundation import L
+from fastcore.basics import *
+from fastcore.xtras import *
 from fasthtml.common import *
 from monsterui.all import *
 from collections import defaultdict
@@ -28,6 +32,51 @@ def main_layout(content, req):
         navbar,
         Container(content)
     )
+
+
+# stick it all in a function
+
+def get_blog_list():
+    post_path = Path('./blog/')
+    posts = post_path.ls()
+
+    to_ignore = [
+        '.DS_Store',
+        '_TEMPLATE',
+        'series',
+        'static',
+        '00_api_tests.ipynb',
+        '01_update_posts.ipynb',
+    ]
+
+    posts = L(p for p in posts if p.name not in to_ignore)
+
+    # add series here, in order you'd like them to appear
+    series = [
+        'llms-course',
+        'guidance-expts',
+    ]
+
+    # NOTE: the /series/ path is important, we use it to group posts
+    for s in series:
+        series_posts = post_path / 'series' / s
+        series_posts = series_posts.ls()
+        series_posts = L(p for p in series_posts if p.name not in to_ignore).sorted()
+        posts.extend(series_posts)
+
+    # group the full list of articles to be rendered
+
+    articles = []
+    for p in posts:
+        stem = p.stem
+        name = str(p).replace('./blog/', 'blog/')
+        full_name = Path(name) / stem
+        post_name = f'{full_name}.ipynb'
+        articles.append(post_name)
+
+    return articles
+
+
 
 
 def extract_directives(cell):
@@ -155,7 +204,7 @@ def get_meta_from_md(fpath: str):
 @functools.lru_cache(maxsize=1)
 def get_all_post_metadata():
     """Cache and retrieve metadata for all blog posts."""
-    fpaths = Path("blog_list.txt").read_text().splitlines()
+    fpaths = get_blog_list() #Path("blog_list.txt").read_text().splitlines()
     metas = []
     
     for fpath in fpaths:
@@ -329,7 +378,7 @@ def series_detail(series_name: str):
 
 @blog_routes
 def index():
-    fpaths = Path("blog_list.txt").read_text().splitlines()
+    fpaths = get_blog_list() #Path("blog_list.txt").read_text().splitlines()
     metas = []
     for fpath in fpaths:
         folder = fpath.split("/")[1]

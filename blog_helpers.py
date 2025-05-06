@@ -16,11 +16,12 @@ from collections import defaultdict
 import functools
 
 # create the navbar
-brand=DivLAligned(
+brand = A(DivLAligned(
     Img(src="/blog/static/imgs/logo.png", width=45, height=45, alt="Site Logo", cls="site-logo"),
     H3("Chris Kroenke's Site", cls="font-bolder pl-2"),
-    cls="flex items-center"
-),
+    cls="flex items-center",
+), href="/")
+
 navbar = NavBar(
     A('Blog', href="/blog", cls=("text-lg", "font-bold", "px-4", "py-2", "border-2", "rounded-md", "mr-2")),
     A('Series', href="/blog/series", cls=("text-lg", "font-bold", "px-4", "py-2", "border-2", "rounded-md", "mr-2")),
@@ -404,27 +405,51 @@ def index():
 
 @blog_routes
 def blog_post(fpath: str):
-    if fpath.endswith(".md"):
-        meta, markdown_content = get_meta_from_md(fpath)
-        content = render_md(markdown_content)
-    else:
-        meta = get_meta_from_nb(read_nb(fpath))
-        content = render_nb(read_nb(fpath))
-    
-    # Add series path detection to meta
-    meta["is_series"] = "/series/" in fpath
-    if meta["is_series"]:
+    # Add series path detection based on path
+    is_series = "/series/" in fpath
+    series_name = None
+    if is_series:
         parts = fpath.split("/")
         if len(parts) >= 3:
-            meta.setdefault("series", parts[2])
-    
-    # Create series navigation if applicable
-    series_nav = create_series_navigation(meta, fpath)
-    
-    return Title(meta.get('title', 'Blog Post')), Container(
-        series_nav or "",
-        content
-    )
+            series_name = parts[2]
+
+    if fpath.endswith(".md"):
+        # Handle markdown files
+        meta, markdown_content = get_meta_from_md(fpath)
+        content = render_md(markdown_content)
+        
+        # Update meta with series info
+        meta["is_series"] = is_series
+        if series_name:
+            meta.setdefault("series", series_name)
+        
+        # Create series navigation if applicable
+        series_nav = create_series_navigation(meta, fpath)
+        
+        # For markdown, return everything in a Container
+        return Title(meta.get('title', 'Blog Post')), Container(
+            series_nav or "",
+            content
+        )
+    else:
+        # Handle notebook files
+        nb = read_nb(fpath)
+        meta = get_meta_from_nb(nb)
+        
+        # Update meta with series info
+        meta["is_series"] = is_series
+        if series_name:
+            meta.setdefault("series", series_name)
+        
+        # Create series navigation if applicable
+        series_nav = create_series_navigation(meta, fpath)
+        
+        # For notebooks, return the title, then the navigation (if any), 
+        # then all the rendered notebook elements
+        if series_nav:
+            return Title(meta.get('title', 'Blog Post')), series_nav, *render_nb(nb)
+        else:
+            return Title(meta.get('title', 'Blog Post')), *render_nb(nb)
 
 
 def blog_card(meta):

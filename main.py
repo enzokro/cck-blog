@@ -15,12 +15,11 @@ img_route = Mount("/blog/static/imgs", StaticFiles(directory="blog/static/imgs")
 # load my greeting
 about_me = Path('greeting.md').readlines()
 
-
 # create the app
 app, rt = fast_app(
     hdrs=[theme, favicon],
     routes=[img_route],
-    live=True,
+    # live=True,
     body_wrap=main_layout,
 )
 
@@ -29,8 +28,16 @@ app, rt = fast_app(
 def index():
     return Title("cck's site"), Div(
         Section(
+            DivCentered(
+                Img(src="blog/static/imgs/LandingPage.png", cls="rounded-full w-64 h-64 object-cover"),
+                H1("Chris Kroenke"),
+                cls="space-y-4 mt-12"
+            ),
+        ),
+        Section(
             Article(render_md(about_me),
-                    cls="prose mx-auto max-w-3xl")
+                    cls="prose mx-auto max-w-3xl"),
+            cls=("mt-12")
         )
     )
 

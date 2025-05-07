@@ -49,4 +49,4 @@ blog_routes.to_app(app)
 
 
 # run the app
-serve()
+serve(port=8080)

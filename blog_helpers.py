@@ -14,11 +14,12 @@ from fasthtml.common import *
 from monsterui.all import *
 from collections import defaultdict
 import functools
+from blog_styles import cck_class_map
 
 # create the navbar
 brand = A(DivLAligned(
     Img(src="/blog/static/imgs/logo.png", width=45, height=45, alt="Site Logo", cls="site-logo"),
-    H3("Chris Kroenke's Site", cls="font-bolder pl-2"),
+    H2("Chris Kroenke's Site", cls="font-bolder pl-2"),
     cls="flex items-center",
 ), href="/")
 
@@ -26,6 +27,7 @@ navbar = NavBar(
     A('Blog', href="/blog", cls=("text-lg", "font-bold", "px-4", "py-2", "border-2", "rounded-md", "mr-2")),
     A('Series', href="/blog/series", cls=("text-lg", "font-bold", "px-4", "py-2", "border-2", "rounded-md", "mr-2")),
     brand=brand,
+    cls="p-4 mx-12"
 )
 
 def main_layout(content, req):
@@ -69,7 +71,11 @@ def get_blog_list():
 
     articles = []
     for p in posts:
+        print(p)
         stem = p.stem
+        if '_' in stem:
+            stem = stem.split("_")[1:]
+            stem = "_".join(stem)
         name = str(p).replace('./blog/', 'blog/')
         full_name = Path(name) / stem
         post_name = f'{full_name}.ipynb'
@@ -175,7 +181,7 @@ def render_nb(nb):
     "Render a notebook as a list of html elements"
     res = []
     meta = get_meta_from_nb(nb)
-    res.append(Div(H1(meta["title"]), Subtitle(meta.get("subtitle", "")), cls="my-9"))
+    res.append(Div(H1(meta["title"], cls="cck-title"), Subtitle(meta.get("subtitle", "")), cls="my-9"))
     for cell in nb.cells[1:]:
         if cell["cell_type"] == "code":
             directives = extract_directives(cell)
@@ -184,7 +190,7 @@ def render_nb(nb):
             res.append(render_code_input(cell, directives))
             res.append(Card(_output, cls='mb-8') if _output else "")
         elif cell["cell_type"] == "markdown":
-            res.append(render_md(cell.source))
+            res.append(render_md(cell.source, class_map=cck_class_map))
     return res
 
 
@@ -447,9 +453,9 @@ def blog_post(fpath: str):
         # For notebooks, return the title, then the navigation (if any), 
         # then all the rendered notebook elements
         if series_nav:
-            return Title(meta.get('title', 'Blog Post')), series_nav, *render_nb(nb)
+            return Title(meta.get('title', 'Blog Post')), Container(series_nav, *render_nb(nb), cls="max-w-4xl")
         else:
-            return Title(meta.get('title', 'Blog Post')), *render_nb(nb)
+            return Title(meta.get('title', 'Blog Post')), Container(*render_nb(nb), cls="max-w-4xl")
 
 
 def blog_card(meta):

@@ -12,12 +12,15 @@ favicon = Favicon(light_icon="/blog/static/imgs/logo.png", dark_icon="/blog/stat
 # make sure we can find our images
 img_route = Mount("/blog/static/imgs", StaticFiles(directory="blog/static/imgs"))
 
+# our custom markdown styling
+md_style = Link(rel="stylesheet", href="/blog/static/styles/style.css")
+
 # load my greeting
 about_me = Path('greeting.md').readlines()
 
 # create the app
 app, rt = fast_app(
-    hdrs=[theme, favicon],
+    hdrs=[theme, favicon, md_style],
     routes=[img_route],
     # live=True,
     body_wrap=main_layout,

@@ -1,0 +1,19 @@
+.cck-title {
+    color: rgb(14, 14, 239); /* Or your preferred color */
+}
+
+.cck-heading { 
+    color: #004f99; /* Your desired heading color */
+}
+
+.cck-subheading { 
+    color: #0f69be; /* Your desired heading color */
+}
+  
+  
+.cck-blockquote {
+    color: #555555; /* Your desired blockquote text color */
+    border-left: 4px solid lightgray;
+    padding-left: 1em;
+    font-style: italic;
+}

@@ -453,9 +453,9 @@ def blog_post(fpath: str):
         # For notebooks, return the title, then the navigation (if any), 
         # then all the rendered notebook elements
         if series_nav:
-            return Title(meta.get('title', 'Blog Post')), Container(series_nav, *render_nb(nb), cls="max-w-4xl")
+            return Title(meta.get('title', 'Blog Post')), Container(series_nav, *render_nb(nb), cls="max-w-4xl pb-24")
         else:
-            return Title(meta.get('title', 'Blog Post')), Container(*render_nb(nb), cls="max-w-4xl")
+            return Title(meta.get('title', 'Blog Post')), Container(*render_nb(nb), cls="max-w-4xl pb-24")
 
 
 def blog_card(meta):

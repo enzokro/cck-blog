@@ -15,3 +15,6 @@ dependencies = [
     "pyyaml>=6.0.2",
     "regex>=2024.11.6",
 ]
+
+[tool.uv.workspace]
+members = ["blog/008_long_late_chunking"]
